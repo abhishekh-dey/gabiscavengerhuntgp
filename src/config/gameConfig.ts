@@ -64,7 +64,7 @@ export const RIDDLES: RiddleData[] = [
     correctAnswer: 1
   },
   {
-    riddle: "I'm a cloud computing platform owned by Amazon. Developers use me to host websites and applications. What am I?",
+    riddle: "I'm a cloud computing platform owned by Amazon. Developers use me to host websites and applications. GoDaddy uses me for all the back-end hosting zones, What am I?",
     options: ["Google Cloud", "Microsoft Azure", "AWS", "DigitalOcean"],
     correctAnswer: 2
   },
