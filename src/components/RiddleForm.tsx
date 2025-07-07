@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, CheckCircle, User, Building, AlertTriangle, RotateCcw } from 'lucide-react';
+import { Brain, CheckCircle, User, Building, AlertTriangle, Home } from 'lucide-react';
 import { RiddleData, RIDDLE_TIME_LIMIT } from '../config/gameConfig';
 import RiddleTimer from './RiddleTimer';
 
@@ -46,11 +46,9 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
     onTimeUp();
   };
 
-  const handleRetry = () => {
-    setShowTimeUpMessage(false);
-    setIsTimerActive(true);
-    setSelectedAnswer(null);
-    onRetry();
+  const handleGoHome = () => {
+    // Go back to home page
+    window.location.reload();
   };
 
   const handleAnswerSubmit = () => {
@@ -267,18 +265,9 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="text-2xl text-white/90 mb-4 relative z-10 font-semibold"
+              className="text-2xl text-white/90 mb-8 relative z-10 font-semibold"
             >
               Better luck next time!
-            </motion.p>
-
-            <motion.p
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="text-white/70 text-lg mb-8 relative z-10"
-            >
-              Don't worry - your unique key is still valid and you can try again.
             </motion.p>
 
             {/* Floating Particles */}
@@ -312,7 +301,7 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
             ))}
           </div>
 
-          {/* Retry Button */}
+          {/* Home Button */}
           <motion.button
             initial={{ y: 50, opacity: 0, scale: 0.8 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -322,7 +311,7 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
               stiffness: 200,
               damping: 10
             }}
-            onClick={handleRetry}
+            onClick={handleGoHome}
             whileHover={{ 
               scale: 1.05,
               boxShadow: "0 10px 30px rgba(168, 85, 247, 0.4)"
@@ -330,13 +319,8 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
             whileTap={{ scale: 0.95 }}
             className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-8 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg flex items-center space-x-3 mx-auto"
           >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <RotateCcw className="w-5 h-5" />
-            </motion.div>
-            <span>Try Again</span>
+            <Home className="w-5 h-5" />
+            <span>Home</span>
           </motion.button>
         </div>
       </motion.div>
