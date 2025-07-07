@@ -53,24 +53,24 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate, onComplete 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="text-center"
+      className="text-center px-4"
     >
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-        className="flex justify-center mb-8"
+        className="flex justify-center mb-6 md:mb-8"
       >
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-4 rounded-full">
-          <Clock className="w-12 h-12 text-white" />
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 md:p-4 rounded-full">
+          <Clock className="w-8 h-8 md:w-12 md:h-12 text-white" />
         </div>
       </motion.div>
 
-      <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+      <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-4 md:mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent px-2">
         Contest Starts In
       </h1>
 
-      <div className="grid grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto mb-6 md:mb-8">
         {[
           { label: 'Days', value: timeLeft.days },
           { label: 'Hours', value: timeLeft.hours },
@@ -82,12 +82,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate, onComplete 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 + index * 0.1 }}
-            className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-2xl"
+            className="bg-white/10 backdrop-blur-lg rounded-xl md:rounded-2xl p-4 md:p-6 border border-white/20 shadow-2xl"
           >
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 md:mb-2">
               {formatNumber(item.value)}
             </div>
-            <div className="text-white/70 text-sm uppercase tracking-wider">
+            <div className="text-white/70 text-xs md:text-sm uppercase tracking-wider">
               {item.label}
             </div>
           </motion.div>
@@ -98,7 +98,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate, onComplete 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.9 }}
-        className="text-xl text-white/80 max-w-2xl mx-auto leading-relaxed"
+        className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed px-4"
       >
         Get ready for the GABI Scavenger Hunt! The contest will begin on{' '}
         <span className="font-semibold text-white">
