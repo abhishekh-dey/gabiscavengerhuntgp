@@ -9,7 +9,7 @@ export interface RiddleData {
 
 // Contest Configuration
 export const CONTEST_START_DATE = new Date('2025-07-07T17:00:00+05:30'); // July 8th, 2025 5:00 PM IST
-export const RIDDLE_TIME_LIMIT = 60; // 90 seconds per riddle
+export const RIDDLE_TIME_LIMIT = 60; // 60 seconds per riddle
 
 // 10 Unique Keys - Each can only be used once
 export const UNIQUE_KEYS = [
