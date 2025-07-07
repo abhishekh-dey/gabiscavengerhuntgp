@@ -7,6 +7,10 @@ export interface RiddleData {
   correctAnswer: number; // Index of correct answer (0-3)
 }
 
+// Contest Configuration
+export const CONTEST_START_DATE = new Date('2025-07-08T17:00:00+05:30'); // July 8th, 2025 5:00 PM IST
+export const RIDDLE_TIME_LIMIT = 90; // 90 seconds per riddle
+
 // 10 Unique Keys - Each can only be used once
 export const UNIQUE_KEYS = [
   'GABI2025HUNT20',
@@ -69,7 +73,7 @@ export const RIDDLES: RiddleData[] = [
     correctAnswer: 2
   },
   {
-    riddle: "I help you know what GoDaddy sells, From domains to hosting, I ring all the bells. What’s my role?",
+    riddle: "I help you know what GoDaddy sells, From domains to hosting, I ring all the bells. What's my role?",
     options: ["Confluence", "Cheatsheet", "CRM Tools Dashboard", "Products Summary - CRM"],
     correctAnswer: 1
   }

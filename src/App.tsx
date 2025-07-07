@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Home } from 'lucide-react';
 import AnimatedBackground from './components/AnimatedBackground';
+import CountdownTimer from './components/CountdownTimer';
 import KeyEntry from './components/KeyEntry';
 import RiddleForm from './components/RiddleForm';
 import WinnersList from './components/WinnersList';
 import ConfettiEffect from './components/ConfettiEffect';
-import { UNIQUE_KEYS, RIDDLES, validateConfig } from './config/gameConfig';
+import { UNIQUE_KEYS, RIDDLES, CONTEST_START_DATE, validateConfig } from './config/gameConfig';
 import { supabase } from './lib/supabase';
 
-type GameState = 'landing' | 'riddle' | 'winners';
+type GameState = 'countdown' | 'landing' | 'riddle' | 'winners';
 
 function App() {
-  const [gameState, setGameState] = useState<GameState>('landing');
+  const [gameState, setGameState] = useState<GameState>('countdown');
   const [currentKey, setCurrentKey] = useState<string>('');
   const [currentRiddleIndex, setCurrentRiddleIndex] = useState<number>(0);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -27,7 +28,17 @@ function App() {
     if (!validateConfig()) {
       setError('Configuration error. Please check the console for details.');
     }
+
+    // Check if contest has already started
+    const now = new Date();
+    if (now >= CONTEST_START_DATE) {
+      setGameState('landing');
+    }
   }, []);
+
+  const handleCountdownComplete = () => {
+    setGameState('landing');
+  };
 
   const handleKeySubmit = async (key: string) => {
     setIsLoading(true);
@@ -146,8 +157,19 @@ function App() {
     }
   };
 
+  const handleTimeUp = () => {
+    // Time up - user can retry with the same key
+    setIsCorrect(null);
+  };
+
+  const handleRetry = () => {
+    // Reset riddle state for retry
+    setIsCorrect(null);
+    setError(null);
+  };
+
   const resetGame = () => {
-    setGameState('landing');
+    setGameState(new Date() >= CONTEST_START_DATE ? 'landing' : 'countdown');
     setCurrentKey('');
     setCurrentRiddleIndex(0);
     setIsCorrect(null);
@@ -162,33 +184,58 @@ function App() {
       <AnimatedBackground />
       <ConfettiEffect trigger={showConfetti} />
       
-      {/* Navigation */}
-      <nav className="relative z-10 p-6">
-        <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <motion.button
-            onClick={resetGame}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors"
-          >
-            <Home className="w-5 h-5" />
-            <span>Home</span>
-          </motion.button>
-          
-          <motion.button
-            onClick={() => setGameState('winners')}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors"
-          >
-            <Trophy className="w-5 h-5" />
-            <span>Winners</span>
-          </motion.button>
-        </div>
-      </nav>
+      {/* Navigation - Only show if contest has started */}
+      {gameState !== 'countdown' && (
+        <nav className="relative z-10 p-6">
+          <div className="flex justify-between items-center max-w-6xl mx-auto">
+            <motion.button
+              onClick={resetGame}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors"
+            >
+              <Home className="w-5 h-5" />
+              <span>Home</span>
+            </motion.button>
+            
+            <motion.button
+              onClick={() => setGameState('winners')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors"
+            >
+              <Trophy className="w-5 h-5" />
+              <span>Winners</span>
+            </motion.button>
+          </div>
+        </nav>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-12">
+        {gameState === 'countdown' && (
+          <div className="text-center">
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mb-12"
+            >
+              <img
+                src="/GABI Scavenger Hunt (1) (1).png"
+                alt="GABI Scavenger Hunt"
+                className="mx-auto max-w-md w-full h-auto"
+              />
+            </motion.div>
+
+            <CountdownTimer
+              targetDate={CONTEST_START_DATE}
+              onComplete={handleCountdownComplete}
+            />
+          </div>
+        )}
+
         {gameState === 'landing' && (
           <div className="text-center">
             {/* Logo */}
@@ -248,6 +295,8 @@ function App() {
               isLoading={isLoading}
               showWinnerForm={showWinnerForm}
               hasWrongAttempt={hasWrongAttempt}
+              onTimeUp={handleTimeUp}
+              onRetry={handleRetry}
             />
             
             {error && (

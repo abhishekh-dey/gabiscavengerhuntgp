@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, CheckCircle, User, Building, AlertTriangle } from 'lucide-react';
-import { RiddleData } from '../config/gameConfig';
+import { RiddleData, RIDDLE_TIME_LIMIT } from '../config/gameConfig';
+import RiddleTimer from './RiddleTimer';
 
 interface RiddleFormProps {
   riddle: RiddleData;
@@ -11,6 +12,8 @@ interface RiddleFormProps {
   isLoading: boolean;
   showWinnerForm: boolean;
   hasWrongAttempt: boolean;
+  onTimeUp: () => void;
+  onRetry: () => void;
 }
 
 const RiddleForm: React.FC<RiddleFormProps> = ({
@@ -21,13 +24,38 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
   isLoading,
   showWinnerForm,
   hasWrongAttempt,
+  onTimeUp,
+  onRetry,
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
+  const [isTimerActive, setIsTimerActive] = useState(true);
+  const [showTimeUpMessage, setShowTimeUpMessage] = useState(false);
+
+  useEffect(() => {
+    // Reset timer when riddle changes or component mounts
+    setIsTimerActive(true);
+    setShowTimeUpMessage(false);
+    setSelectedAnswer(null);
+  }, [riddle]);
+
+  const handleTimeUp = () => {
+    setIsTimerActive(false);
+    setShowTimeUpMessage(true);
+    onTimeUp();
+  };
+
+  const handleRetry = () => {
+    setShowTimeUpMessage(false);
+    setIsTimerActive(true);
+    setSelectedAnswer(null);
+    onRetry();
+  };
 
   const handleAnswerSubmit = () => {
-    if (selectedAnswer !== null) {
+    if (selectedAnswer !== null && isTimerActive) {
+      setIsTimerActive(false);
       onAnswerSubmit(selectedAnswer);
     }
   };
@@ -118,7 +146,7 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
   }
 
   // Show blocked message if user already had a wrong attempt
-  if (hasWrongAttempt && isCorrect === null) {
+  if (hasWrongAttempt && isCorrect === null && !showTimeUpMessage) {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
@@ -165,6 +193,27 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
     );
   }
 
+  // Show time up message
+  if (showTimeUpMessage) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-2xl mx-auto"
+      >
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
+          <RiddleTimer
+            timeLimit={RIDDLE_TIME_LIMIT}
+            onTimeUp={handleTimeUp}
+            isActive={false}
+            onReset={handleRetry}
+          />
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -188,6 +237,12 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
           Solve the Riddle
         </h2>
 
+        <RiddleTimer
+          timeLimit={RIDDLE_TIME_LIMIT}
+          onTimeUp={handleTimeUp}
+          isActive={isTimerActive}
+        />
+
         <div className="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
           <p className="text-white text-lg leading-relaxed text-center">
             {riddle.riddle}
@@ -198,13 +253,16 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
           {riddle.options.map((option, index) => (
             <motion.button
               key={index}
-              onClick={() => setSelectedAnswer(index)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              onClick={() => isTimerActive && setSelectedAnswer(index)}
+              whileHover={isTimerActive ? { scale: 1.02 } : {}}
+              whileTap={isTimerActive ? { scale: 0.98 } : {}}
+              disabled={!isTimerActive}
               className={`p-4 rounded-lg border-2 transition-all duration-300 text-left ${
                 selectedAnswer === index
                   ? 'border-purple-500 bg-purple-500/20 text-white'
-                  : 'border-white/30 bg-white/10 text-white/80 hover:border-white/50 hover:bg-white/20'
+                  : isTimerActive
+                  ? 'border-white/30 bg-white/10 text-white/80 hover:border-white/50 hover:bg-white/20'
+                  : 'border-white/20 bg-white/5 text-white/50 cursor-not-allowed'
               }`}
             >
               <span className="font-semibold mr-2">
@@ -233,7 +291,7 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
 
         <motion.button
           onClick={handleAnswerSubmit}
-          disabled={selectedAnswer === null || isLoading}
+          disabled={selectedAnswer === null || isLoading || !isTimerActive}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
