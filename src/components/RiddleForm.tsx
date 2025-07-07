@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, CheckCircle, User, Building, AlertTriangle } from 'lucide-react';
+import { Brain, CheckCircle, User, Building, AlertTriangle, RotateCcw } from 'lucide-react';
 import { RiddleData, RIDDLE_TIME_LIMIT } from '../config/gameConfig';
 import RiddleTimer from './RiddleTimer';
 
@@ -193,7 +193,7 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
     );
   }
 
-  // Show time up message
+  // Show time up message - COMPLETELY REPLACE THE RIDDLE
   if (showTimeUpMessage) {
     return (
       <motion.div
@@ -202,18 +202,148 @@ const RiddleForm: React.FC<RiddleFormProps> = ({
         transition={{ duration: 0.5 }}
         className="w-full max-w-2xl mx-auto"
       >
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
-          <RiddleTimer
-            timeLimit={RIDDLE_TIME_LIMIT}
-            onTimeUp={handleTimeUp}
-            isActive={false}
-            onReset={handleRetry}
-          />
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl text-center">
+          {/* Animated Background Effects */}
+          <div className="relative overflow-hidden rounded-2xl mb-8">
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 2, opacity: 0.1 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500"
+            />
+            
+            {/* Main Icon */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 200, 
+                damping: 10,
+                delay: 0.2 
+              }}
+              className="flex justify-center mb-6 relative z-10"
+            >
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ 
+                  duration: 0.6, 
+                  repeat: Infinity, 
+                  repeatType: "reverse" 
+                }}
+                className="bg-gradient-to-r from-red-500 to-orange-500 p-6 rounded-full shadow-2xl"
+              >
+                <AlertTriangle className="w-16 h-16 text-white" />
+              </motion.div>
+            </motion.div>
+
+            {/* Animated Title */}
+            <motion.h2
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
+              className="text-5xl font-bold text-white mb-4 relative z-10"
+            >
+              <motion.span
+                animate={{ 
+                  textShadow: [
+                    "0 0 0px rgba(239, 68, 68, 0)",
+                    "0 0 20px rgba(239, 68, 68, 0.8)",
+                    "0 0 0px rgba(239, 68, 68, 0)"
+                  ]
+                }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent"
+              >
+                Time's Up!
+              </motion.span>
+            </motion.h2>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-2xl text-white/90 mb-4 relative z-10 font-semibold"
+            >
+              Better luck next time!
+            </motion.p>
+
+            <motion.p
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="text-white/70 text-lg mb-8 relative z-10"
+            >
+              Don't worry - your unique key is still valid and you can try again.
+            </motion.p>
+
+            {/* Floating Particles */}
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ 
+                  opacity: 0, 
+                  scale: 0,
+                  x: 0,
+                  y: 0
+                }}
+                animate={{ 
+                  opacity: [0, 1, 0],
+                  scale: [0, 1, 0],
+                  x: [0, (Math.random() - 0.5) * 200],
+                  y: [0, (Math.random() - 0.5) * 200]
+                }}
+                transition={{ 
+                  duration: 2,
+                  delay: 0.5 + i * 0.1,
+                  repeat: Infinity,
+                  repeatDelay: 1
+                }}
+                className="absolute w-3 h-3 bg-gradient-to-r from-red-400 to-orange-400 rounded-full"
+                style={{
+                  left: '50%',
+                  top: '50%',
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Retry Button */}
+          <motion.button
+            initial={{ y: 50, opacity: 0, scale: 0.8 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            transition={{ 
+              delay: 1.0, 
+              type: "spring", 
+              stiffness: 200,
+              damping: 10
+            }}
+            onClick={handleRetry}
+            whileHover={{ 
+              scale: 1.05,
+              boxShadow: "0 10px 30px rgba(168, 85, 247, 0.4)"
+            }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-8 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg flex items-center space-x-3 mx-auto"
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <RotateCcw className="w-5 h-5" />
+            </motion.div>
+            <span>Try Again</span>
+          </motion.button>
         </div>
       </motion.div>
     );
   }
 
+  // Show the riddle form (only when timer is active and no time up)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
